@@ -9,3 +9,19 @@ export function getBucketList(params) {
         params
     })
 }
+
+export function createBucket(data) {
+    return request({
+        url: BASE_PATH,
+        method: 'post',
+        data
+    })
+}
+
+export function deleteBucket(params) {
+    return request({
+        url: BASE_PATH,
+        method: 'delete',
+        params
+    })
+}

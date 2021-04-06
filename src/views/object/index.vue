@@ -2,7 +2,7 @@
 	<div class="table-container">
 		<vab-query-form>
 			<vab-query-form-left-panel>
-				<el-button type="primary">
+				<el-button type="primary" @click="openUploadDialog">
 					上传
 					<i class="el-icon-upload el-icon--right"></i>
 				</el-button>
@@ -64,17 +64,20 @@
 		</el-table>
 
 		<details-drawer ref="detailsDrawer"></details-drawer>
+		<upload-dialog ref="uploadDialog"></upload-dialog>
 	</div>
 </template>
 
 <script>
 import DetailsDrawer from './components/DetailsDrawer'
+import UploadDialog from './components/UploadDialog'
 import { getObjectList } from '@/api/object'
 
 export default {
 	name: 'Object',
 	components: {
 		DetailsDrawer,
+		UploadDialog
 	},
 	data() {
 		return {
@@ -96,6 +99,9 @@ export default {
 		openDetailsDialog(row) {
 			this.$refs.detailsDrawer.show(row)
 		},
+		openUploadDialog(){
+			this.$refs.uploadDialog.show();
+		}
 	},
 }
 </script>

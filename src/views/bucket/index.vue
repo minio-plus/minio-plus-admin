@@ -1,5 +1,15 @@
 <template>
 	<div class="table-container">
+		<vab-query-form>
+			<vab-query-form-left-panel>
+				<el-button type="primary" @click="openEdit">
+					创建桶
+					<i class="el-icon-coin el-icon--right"></i>
+				</el-button>
+			</vab-query-form-left-panel>
+			<vab-query-form-right-panel></vab-query-form-right-panel>
+		</vab-query-form>
+
 		<el-table :data="tableData" style="width: 100%">
 			<el-table-column type="index" width="50"></el-table-column>
 			<el-table-column prop="name" label="名称"></el-table-column>
@@ -22,13 +32,18 @@
 					>
 						对象
 					</el-button>
-					<el-dropdown class="el-button el-button--text el-button--small" @command="removeBucket(scope.row)">
+					<el-dropdown
+						class="el-button el-button--text el-button--small"
+						@command="switchDropdown"
+					>
 						<span class="el-dropdown-link">
 							更多
 							<i class="el-icon-arrow-down"></i>
 						</span>
 						<el-dropdown-menu slot="dropdown">
-							<el-dropdown-item :command="{ code: 1, data: scope.row }">标签</el-dropdown-item>
+							<el-dropdown-item :command="{ code: 1, data: scope.row }">
+								标签
+							</el-dropdown-item>
 							<el-dropdown-item :command="{ code: 2, data: scope.row }">
 								删除
 							</el-dropdown-item>
@@ -37,13 +52,16 @@
 				</template>
 			</el-table-column>
 		</el-table>
+
+		<table-edit ref="tableEdit" @complete="loadTable"></table-edit>
 	</div>
 </template>
 <script>
-import { getBucketList } from '@/api/bucket'
+import TableEdit from './components/TableEdit'
+import { getBucketList, deleteBucket } from '@/api/bucket'
 
 export default {
-	components: {},
+	components: { TableEdit },
 	data() {
 		return {
 			tableData: [],
@@ -66,14 +84,14 @@ export default {
 				},
 			})
 		},
-		switchDropdown(command){
-			switch(command.code){
+		switchDropdown(command) {
+			console.log(command)
+			switch (command.code) {
 				case 1:
-
-					break;
+					break
 				case 2:
 					this.removeBucket(command.data)
-					break;
+					break
 			}
 		},
 		removeBucket(data) {
@@ -83,10 +101,15 @@ export default {
 				type: 'warning',
 			})
 				.then(() => {
-					this.$message({
-						type: 'success',
-						message: '删除成功!',
+
+					deleteBucket({ name: data.name }).then((res) => {
+						this.$message({
+							type: 'success',
+							message: '操作成功!',
+						})
+						this.loadTable()
 					})
+				
 				})
 				.catch(() => {
 					this.$message({
@@ -94,6 +117,9 @@ export default {
 						message: '已取消删除',
 					})
 				})
+		},
+		openEdit() {
+			this.$refs.tableEdit.show()
 		},
 	},
 }
