@@ -4,7 +4,7 @@
 		:visible.sync="dialogVisible"
 		:before-close="handleClose"
 	>
-		<el-form ref="form" :model="form" label-width="80px">
+		<el-form ref="form" :model="form" :rules="formRules" label-width="80px">
 			<el-form-item label="状态" prop="status">
 				<el-radio-group v-model="form.status">
 					<el-radio label="Enabled" border>启用</el-radio>
@@ -18,7 +18,7 @@
 				</el-radio-group>
 			</el-form-item>
 
-			<el-form-item label="前缀" v-if="strategy === 1">
+			<el-form-item label="前缀" v-if="strategy === 1" prop="prefix">
 				<el-input v-model="form.prefix" placeholder="请输入内容"></el-input>
 			</el-form-item>
 
@@ -51,31 +51,30 @@
 				<el-radio-group v-model="expirationStrategy">
 					<el-radio :label="1" border>过期天数</el-radio>
 					<el-radio :label="2" border>过期日期</el-radio>
-					<el-radio :label="0" border>禁用</el-radio>
 				</el-radio-group>
 			</el-form-item>
 
 			<el-form-item label="删除文件" prop="days">
 				<el-row>
-					<el-col :span="2">
+					<el-col :span="1">
 						<el-checkbox
 							v-model="deleteObject"
 							@change="deleteObjectChange"
 						></el-checkbox>
 					</el-col>
-					<el-col :span="22">
+					<el-col :span="23">
 						<el-input
 							v-model="form.days"
 							placeholder="请输入天数"
 							v-if="expirationStrategy == 1"
 							:disabled="!deleteObject"
 						></el-input>
-                        <el-date-picker
+						<el-date-picker
 							v-model="form.date"
 							type="date"
 							placeholder="选择日期"
-                            v-if="expirationStrategy == 2"
-                            :disabled="!deleteObject"
+							v-if="expirationStrategy == 2"
+							:disabled="!deleteObject"
 						></el-date-picker>
 					</el-col>
 				</el-row>
@@ -92,6 +91,18 @@ import { creareBucketLifecycleRule } from '@/api/bucket'
 
 export default {
 	data() {
+		var checkPrefix = (rule, value, callback) => {
+			if (this.strategy === 1 && !value) {
+				return callback(new Error('前缀不能为空'))
+			}
+		}
+
+        var checkDays = (rule, value, callback) => {
+			if (this.expirationStrategy === 1 && !value) {
+				return callback(new Error('天数不能为空'))
+			}
+		}
+
 		return {
 			dialogVisible: false,
 			form: {
@@ -108,6 +119,10 @@ export default {
 				// 标签
 				key: '',
 				value: '',
+			},
+			formRules: {
+				prefix: [{ validator: checkPrefix, trigger: 'blur' }],
+				days: [{ validator: checkDays, trigger: 'blur' }],
 			},
 		}
 	},
@@ -148,10 +163,17 @@ export default {
 			}
 		},
 		save() {
-			creareBucketLifecycleRule(this.form).then((res) => {
-				this.dialogVisible = false
-				this.$refs.form.resetFields()
-				this.$emit('success')
+			this.$refs.form.validate((valid) => {
+				if (valid) {
+					creareBucketLifecycleRule(this.form).then((res) => {
+						this.dialogVisible = false
+						this.$refs.form.resetFields()
+						this.$emit('success')
+					})
+				} else {
+					this.$message.error('未通过表单验证')
+					return false
+				}
 			})
 		},
 	},
