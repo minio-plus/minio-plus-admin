@@ -10,7 +10,7 @@
 			<el-row :gutter="20">
 				<el-col :span="24">
 					<el-image
-						:src="'http://47.112.226.124:9100/liangwei/' + data.objectName"
+						:src="bucketURL + '/' + data.objectName"
 						:preview-src-list="srcList"
 					></el-image>
 				</el-col>
@@ -36,7 +36,7 @@
 				<el-col :span="4" class="text-align-right">URL</el-col>
 
 				<el-col :span="20">
-					<el-link :href="'http://47.112.226.124:9100/liangwei/' + data.name" type="primary">{{ 'http://47.112.226.124:9100/liangwei/' + data.name }}</el-link>
+					<el-link :href="bucketURL + '/' + data.objectName" type="primary">{{ bucketURL + '/' + data.objectName }}</el-link>
 				</el-col>
 			</el-row>
 
@@ -51,6 +51,8 @@
 	</el-drawer>
 </template>
 <script>
+import { fileServerURL } from '@/config'
+
 export default {
 	data() {
 		return {
@@ -58,13 +60,15 @@ export default {
 			direction: 'rtl',
 			data: {},
 			srcList: [],
+			bucketURL: ''
 		}
 	},
 	methods: {
 		show(row) {
 			this.drawer = true
 			this.data = row
-			this.srcList.push('http://47.112.226.124:9100/liangwei/' + this.data.name)
+			this.bucketURL = fileServerURL + '/' + row.bucketName
+			this.srcList.push(this.bucketURL + '/' + this.data.objectName)
 		},
 		handleClose(done) {
 			done()

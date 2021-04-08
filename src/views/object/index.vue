@@ -152,6 +152,7 @@ export default {
 			})
 		},
 		openDetailsDialog(row) {
+			row.bucketName = this.queryForm.bucketName;
 			this.$refs.detailsDrawer.show(row)
 		},
 		openUploadDialog() {

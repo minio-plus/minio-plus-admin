@@ -24,21 +24,6 @@
 							></el-option>
 						</el-select>
 					</el-form-item>
-
-					<el-form-item>
-						<el-input v-model="queryForm.name" placeholder="文件名" />
-					</el-form-item>
-
-					<el-form-item>
-						<el-button
-							icon="el-icon-search"
-							type="primary"
-							native-type="submit"
-							@click="loadTable"
-						>
-							查询
-						</el-button>
-					</el-form-item>
 				</el-form>
 			</vab-query-form-right-panel>
 		</vab-query-form>
