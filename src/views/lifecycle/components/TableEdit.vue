@@ -95,12 +95,14 @@ export default {
 			if (this.strategy === 1 && !value) {
 				return callback(new Error('前缀不能为空'))
 			}
+            callback();
 		}
 
         var checkDays = (rule, value, callback) => {
 			if (this.expirationStrategy === 1 && !value) {
 				return callback(new Error('天数不能为空'))
 			}
+            callback();
 		}
 
 		return {
