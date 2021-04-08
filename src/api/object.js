@@ -9,3 +9,11 @@ export function getObjectList(params) {
         params
     })
 }
+
+export function createFolder(data) {
+    return request({
+        url: BASE_PATH + '/folder',
+        method: 'post',
+        data
+    })
+}

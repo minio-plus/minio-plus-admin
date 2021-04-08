@@ -10,7 +10,7 @@
 			<el-row :gutter="20">
 				<el-col :span="24">
 					<el-image
-						:src="'http://47.112.226.124:9100/liangwei/' + data.name"
+						:src="'http://47.112.226.124:9100/liangwei/' + data.objectName"
 						:preview-src-list="srcList"
 					></el-image>
 				</el-col>
@@ -20,7 +20,7 @@
 				<el-col :span="4" class="text-align-right">文件名</el-col>
 
 				<el-col :span="20">
-					{{ data.name }}
+					{{ data.objectName }}
 				</el-col>
 			</el-row>
 
@@ -44,7 +44,7 @@
 				<el-col :span="4" class="text-align-right">类型</el-col>
 
 				<el-col :span="20">
-					暂无
+					{{ data.contentType }}
 				</el-col>
 			</el-row>
 		</div>

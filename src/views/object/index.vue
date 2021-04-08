@@ -6,7 +6,7 @@
 					上传
 					<i class="el-icon-upload el-icon--right"></i>
 				</el-button>
-				<el-button type="primary">
+				<el-button type="primary" @click="openFolderEdit">
 					新建目录
 					<i class="el-icon-folder-add el-icon--right"></i>
 				</el-button>
@@ -19,8 +19,20 @@
 					@submit.native.prevent
 				>
 					<el-form-item>
+						<el-select v-model="queryForm.bucketName" placeholder="请选择" @change="loadTable">
+							<el-option
+								v-for="item in bucketList"
+								:key="item.name"
+								:label="item.name"
+								:value="item.name"
+							></el-option>
+						</el-select>
+					</el-form-item>
+
+					<el-form-item>
 						<el-input v-model="queryForm.name" placeholder="文件名" />
 					</el-form-item>
+
 					<el-form-item>
 						<el-button
 							icon="el-icon-search"
@@ -35,11 +47,34 @@
 			</vab-query-form-right-panel>
 		</vab-query-form>
 
-		<el-table :data="tableData" style="width: 100%">
+		<el-table :data="tableData" v-loading="tableLoading" style="width: 100%">
 			<el-table-column type="index" width="50"></el-table-column>
-			<el-table-column prop="name" label="名称"></el-table-column>
+			<el-table-column label="名称">
+				<template slot-scope="scope">
+					<el-button
+						type="text"
+						icon="el-icon-folder"
+						v-if="scope.row.dir === true"
+					>
+						{{ scope.row.objectName }}
+					</el-button>
+					<el-button
+						type="text"
+						icon="el-icon-picture"
+						v-if="scope.row.dir === false"
+					>
+						{{ scope.row.objectName }}
+					</el-button>
+				</template>
+			</el-table-column>
 			<el-table-column prop="size" label="大小"></el-table-column>
-			<el-table-column prop="lastUpdateTime" label="更新时间"></el-table-column>
+			<el-table-column label="存储类">
+				<template slot-scope="scope">
+					{{ scope.row.storageClass == 'STANDARD' ? '标准' : '' }}
+				</template>
+			</el-table-column>
+			<el-table-column prop="lastModified" label="更新时间"></el-table-column>
+
 			<el-table-column label="操作">
 				<template slot-scope="scope">
 					<el-button
@@ -65,43 +100,66 @@
 
 		<details-drawer ref="detailsDrawer"></details-drawer>
 		<upload-dialog ref="uploadDialog"></upload-dialog>
+		<folder-edit ref="folderEdit" @success="loadTable"></folder-edit>
 	</div>
 </template>
 
 <script>
-import DetailsDrawer from './components/DetailsDrawer'
-import UploadDialog from './components/UploadDialog'
+import { DetailsDrawer, UploadDialog, FolderEdit } from './components'
+import { getBucketList } from '@/api/bucket'
 import { getObjectList } from '@/api/object'
 
 export default {
 	name: 'Object',
 	components: {
 		DetailsDrawer,
-		UploadDialog
+		UploadDialog,
+		FolderEdit,
 	},
 	data() {
 		return {
-			queryForm: {},
+			queryForm: {
+				bucketName: '',
+			},
+			tableLoading: false,
 			tableData: [],
+			bucketList: [],
 		}
 	},
 	created() {
-		this.loadTable()
+		this.$router.onReady(() => {
+			// 获取桶列表
+			getBucketList().then((res) => {
+				this.bucketList = res.data
+
+				if (!this.$route.params.bucketName) {
+					this.queryForm.bucketName = this.bucketList[0].name
+				} else {
+					this.queryForm.bucketName = this.$route.params.bucketName
+				}
+				this.loadTable()
+			})
+		})
+		
 	},
+	mounted() {},
 	methods: {
 		loadTable() {
-			this.$router.onReady(() => {
-				getObjectList(this.$route.params).then((res) => {
-					this.tableData = res.data
-				})
+			this.tableLoading = true;
+			getObjectList(this.queryForm).then((res) => {
+				this.tableData = res.data
+				this.tableLoading = false;
 			})
 		},
 		openDetailsDialog(row) {
 			this.$refs.detailsDrawer.show(row)
 		},
-		openUploadDialog(){
-			this.$refs.uploadDialog.show();
-		}
+		openUploadDialog() {
+			this.$refs.uploadDialog.show()
+		},
+		openFolderEdit() {
+			this.$refs.folderEdit.show({ bucketName: this.queryForm.bucketName })
+		},
 	},
 }
 </script>

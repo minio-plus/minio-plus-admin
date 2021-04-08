@@ -25,3 +25,27 @@ export function deleteBucket(params) {
         params
     })
 }
+
+export function getBucketLifecycleRuleList(params) {
+    return request({
+        url: BASE_PATH + "/lifecycle/rule/list",
+        method: 'get',
+        params
+    })
+}
+
+export function creareBucketLifecycleRule(data) {
+    return request({
+        url: BASE_PATH + "/lifecycle/rule",
+        method: 'post',
+        data
+    })
+}
+
+export function deleteBucketLifecycleRule(params) {
+    return request({
+        url: BASE_PATH + "/lifecycle/rule",
+        method: 'delete',
+        params
+    })
+}

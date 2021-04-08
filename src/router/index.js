@@ -62,6 +62,10 @@ export const asyncRoutes = [{
         path: '/bucket',
         component: Layout,
         redirect: '/index',
+        meta: {
+            title: '桶管理',
+            icon: 'coins'
+        },
         children: [
             {
                 path: 'index',
@@ -70,16 +74,34 @@ export const asyncRoutes = [{
                     import ('@/views/bucket/index'),
                 meta: {
                     title: '桶管理',
-                    icon: 'home',
+                    icon: 'coins',
                 },
-            },
+            }
         ]
     },
+
+    {
+        path: '/bucket/lifecycle',
+        component: Layout,
+        redirect: '/index',
+        children: [
+            {
+                path: 'rule',
+                name: 'BucketLifecycleRule',
+                component: () =>
+                    import ('@/views/lifecycle/index'),
+                meta: {
+                    title: '生命周期管理',
+                    icon: 'object-group'
+                },
+            }
+        ]
+    },
+
     {
         path: '/object',
         component: Layout,
         redirect: '/index',
-        hidden: true,
         children: [
             {
                 path: 'index',
@@ -88,7 +110,7 @@ export const asyncRoutes = [{
                     import ('@/views/object/index'),
                 meta: {
                     title: '对象管理',
-                    icon: 'home'
+                    icon: 'object-group'
                 },
             }
         ]
