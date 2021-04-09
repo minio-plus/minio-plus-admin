@@ -156,7 +156,7 @@ export default {
 			this.$refs.detailsDrawer.show(row)
 		},
 		openUploadDialog() {
-			this.$refs.uploadDialog.show()
+			this.$refs.uploadDialog.show({ bucketName: this.queryForm.bucketName })
 		},
 		openFolderEdit() {
 			this.$refs.folderEdit.show({ bucketName: this.queryForm.bucketName })
