@@ -8,20 +8,10 @@
 				</el-button>
 			</vab-query-form-left-panel>
 			<vab-query-form-right-panel>
-				<el-form
-					ref="form"
-					:model="queryForm"
-					:inline="true"
-					@submit.native.prevent
-				>
+				<el-form ref="form" :model="queryForm" :inline="true" @submit.native.prevent>
 					<el-form-item>
 						<el-select v-model="queryForm.bucketName" placeholder="请选择" @change="loadTable">
-							<el-option
-								v-for="item in bucketList"
-								:key="item.name"
-								:label="item.name"
-								:value="item.name"
-							></el-option>
+							<el-option v-for="item in bucketList" :key="item.name" :label="item.name" :value="item.name"></el-option>
 						</el-select>
 					</el-form-item>
 				</el-form>
@@ -36,11 +26,7 @@
 						<div>前缀 {{ scope.row.prefix }}</div>
 						<div>
 							标签
-							<el-tag
-								type="warning"
-								v-for="(val, key, index) in scope.row.tags"
-								:key="index"
-							>
+							<el-tag type="warning" v-for="(val, key, index) in scope.row.tags" :key="index">
 								{{ key }} : {{ val }}
 							</el-tag>
 						</div>
@@ -51,11 +37,7 @@
 					</div>
 					<div v-else>
 						<div>全局匹配</div>
-						<el-tag
-							type="warning"
-							v-for="(val, key, index) in scope.row.tags"
-							:key="index"
-						>
+						<el-tag type="warning" v-for="(val, key, index) in scope.row.tags" :key="index">
 							{{ key }} : {{ val }}
 						</el-tag>
 					</div>
@@ -78,7 +60,7 @@
 			</el-table-column>
 			<el-table-column label="操作">
 				<template slot-scope="scope">
-					<el-button type="text">编辑</el-button>
+					<el-button type="text" @click="editRow(scope.row)">编辑</el-button>
 					<el-button type="text" @click="deleteRow(scope.row)">删除</el-button>
 				</template>
 			</el-table-column>
@@ -90,21 +72,25 @@
 
 <script>
 import TableEdit from './components/TableEdit'
-import { getBucketList, getBucketLifecycleRuleList, deleteBucketLifecycleRule } from '@/api/bucket'
+import {
+	getBucketList,
+	getBucketLifecycleRuleList,
+	deleteBucketLifecycleRule,
+} from '@/api/bucket'
 
 export default {
 	components: { TableEdit },
 	data() {
 		return {
-            queryForm: {
-                bucketName: ''
-            },
+			queryForm: {
+				bucketName: '',
+			},
 			tableData: [],
-            bucketList: []
+			bucketList: [],
 		}
 	},
 	created() {
-        this.$router.onReady(() => {
+		this.$router.onReady(() => {
 			// 获取桶列表
 			getBucketList().then((res) => {
 				this.bucketList = res.data
@@ -120,33 +106,44 @@ export default {
 	},
 	methods: {
 		loadTable() {
-			getBucketLifecycleRuleList({ bucketName: this.queryForm.bucketName }).then((res) => {
+			getBucketLifecycleRuleList({
+				bucketName: this.queryForm.bucketName,
+			}).then((res) => {
 				this.tableData = res.data
 			})
 		},
 		openTableEdit() {
 			this.$refs.tableEdit.show({ bucketName: this.queryForm.bucketName })
 		},
+		editRow(row) {
+			let data = Object.assign({ bucketName: this.queryForm.bucketName }, row);
+			this.$refs.tableEdit.show(data)
+		},
 		deleteRow(row) {
 			this.$confirm('此操作将永久删除, 是否继续?', '提示', {
 				confirmButtonText: '确定',
 				cancelButtonText: '取消',
 				type: 'warning',
-			}).then(() => {
-                deleteBucketLifecycleRule({ bucketName: this.queryForm.bucketName, id: row.id }).then(res => {
-                    this.$message({
-                        type: 'success',
-                        message: '操作成功!',
-                    })
-                    this.loadTable()
-                })
-            }).catch(() => {
-                this.$message({
-                    type: 'info',
-                    message: '已取消删除',
-                })
-            })
-    },
+			})
+				.then(() => {
+					deleteBucketLifecycleRule({
+						bucketName: this.queryForm.bucketName,
+						id: row.id,
+					}).then((res) => {
+						this.$message({
+							type: 'success',
+							message: '操作成功!',
+						})
+						this.loadTable()
+					})
+				})
+				.catch(() => {
+					this.$message({
+						type: 'info',
+						message: '已取消删除',
+					})
+				})
+		},
 	},
 }
 </script>

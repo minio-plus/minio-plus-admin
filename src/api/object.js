@@ -17,3 +17,11 @@ export function createFolder(data) {
         data
     })
 }
+
+export function uploadObject(params){
+    return request({
+        url: BASE_PATH + '/upload',
+        method: 'post',
+        params
+    })
+}

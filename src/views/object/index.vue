@@ -12,20 +12,10 @@
 				</el-button>
 			</vab-query-form-left-panel>
 			<vab-query-form-right-panel>
-				<el-form
-					ref="form"
-					:model="queryForm"
-					:inline="true"
-					@submit.native.prevent
-				>
+				<el-form ref="form" :model="queryForm" :inline="true" @submit.native.prevent>
 					<el-form-item>
 						<el-select v-model="queryForm.bucketName" placeholder="请选择" @change="loadTable">
-							<el-option
-								v-for="item in bucketList"
-								:key="item.name"
-								:label="item.name"
-								:value="item.name"
-							></el-option>
+							<el-option v-for="item in bucketList" :key="item.name" :label="item.name" :value="item.name"></el-option>
 						</el-select>
 					</el-form-item>
 
@@ -34,12 +24,7 @@
 					</el-form-item>
 
 					<el-form-item>
-						<el-button
-							icon="el-icon-search"
-							type="primary"
-							native-type="submit"
-							@click="loadTable"
-						>
+						<el-button icon="el-icon-search" type="primary" native-type="submit" @click="loadTable">
 							查询
 						</el-button>
 					</el-form-item>
@@ -51,18 +36,10 @@
 			<el-table-column type="index" width="50"></el-table-column>
 			<el-table-column label="名称">
 				<template slot-scope="scope">
-					<el-button
-						type="text"
-						icon="el-icon-folder"
-						v-if="scope.row.dir === true"
-					>
+					<el-button type="text" icon="el-icon-folder" v-if="scope.row.dir === true" @click="nameClick(scope.row)">
 						{{ scope.row.objectName }}
 					</el-button>
-					<el-button
-						type="text"
-						icon="el-icon-picture"
-						v-if="scope.row.dir === false"
-					>
+					<el-button type="text" icon="el-icon-picture" v-if="scope.row.dir === false" @click="nameClick(scope.row)">
 						{{ scope.row.objectName }}
 					</el-button>
 				</template>
@@ -77,11 +54,7 @@
 
 			<el-table-column label="操作">
 				<template slot-scope="scope">
-					<el-button
-						@click="openDetailsDialog(scope.row)"
-						type="text"
-						size="small"
-					>
+					<el-button @click="openDetailsDialog(scope.row)" type="text" size="small">
 						详情
 					</el-button>
 					<el-dropdown class="el-button el-button--text el-button--small">
@@ -120,6 +93,7 @@ export default {
 		return {
 			queryForm: {
 				bucketName: '',
+				prefix: '',
 			},
 			tableLoading: false,
 			tableData: [],
@@ -140,20 +114,30 @@ export default {
 				this.loadTable()
 			})
 		})
-		
 	},
 	mounted() {},
 	methods: {
 		loadTable() {
-			this.tableLoading = true;
+			this.tableLoading = true
 			getObjectList(this.queryForm).then((res) => {
 				this.tableData = res.data
-				this.tableLoading = false;
+				if (this.queryForm.prefix) {
+					this.tableData.splice(0, 0, { name: this.queryForm.prefix })
+				}
+				this.tableLoading = false
 			})
 		},
 		openDetailsDialog(row) {
-			row.bucketName = this.queryForm.bucketName;
+			row.bucketName = this.queryForm.bucketName
 			this.$refs.detailsDrawer.show(row)
+		},
+		nameClick(data) {
+			if (data.dir) {
+				this.queryForm.prefix = data.objectName
+				this.loadTable()
+			} else {
+				this.openDetailsDialog(data)
+			}
 		},
 		openUploadDialog() {
 			this.$refs.uploadDialog.show({ bucketName: this.queryForm.bucketName })

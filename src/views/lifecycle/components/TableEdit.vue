@@ -1,9 +1,5 @@
 <template>
-	<el-dialog
-		:title="this.form.id ? '编辑' : '创建'"
-		:visible.sync="dialogVisible"
-		:before-close="handleClose"
-	>
+	<el-dialog :title="this.form.id ? '编辑' : '创建'" :visible.sync="dialogVisible" :before-close="handleClose">
 		<el-form ref="form" :model="form" :rules="formRules" label-width="80px">
 			<el-form-item label="状态" prop="status">
 				<el-radio-group v-model="form.status">
@@ -23,14 +19,7 @@
 			</el-form-item>
 
 			<el-form-item label="标签">
-				<el-tag
-					type="warning"
-					closable
-					:disable-transitions="false"
-					@close="removeTag(key)"
-					v-for="(val, key, index) in form.tags"
-					:key="index"
-				>
+				<el-tag type="warning" closable :disable-transitions="false" @close="removeTag(key)" v-for="(val, key, index) in form.tags" :key="index">
 					{{ key }} : {{ val }}
 				</el-tag>
 
@@ -48,34 +37,20 @@
 			</el-form-item>
 
 			<el-form-item label="过期策略">
-				<el-radio-group v-model="expirationStrategy">
-					<el-radio :label="1" border>过期天数</el-radio>
-					<el-radio :label="2" border>过期日期</el-radio>
+				<el-radio-group v-model="form.cleanStrategy">
+					<el-radio label="EXPIRATION_DAYS" border>过期天数</el-radio>
+					<el-radio label="EXPIRATION_DATE" border>过期日期</el-radio>
 				</el-radio-group>
 			</el-form-item>
 
 			<el-form-item label="删除文件" prop="days">
 				<el-row>
 					<el-col :span="1">
-						<el-checkbox
-							v-model="deleteObject"
-							@change="deleteObjectChange"
-						></el-checkbox>
+						<el-checkbox v-model="deleteObject" @change="deleteObjectChange"></el-checkbox>
 					</el-col>
 					<el-col :span="23">
-						<el-input
-							v-model="form.days"
-							placeholder="请输入天数"
-							v-if="expirationStrategy == 1"
-							:disabled="!deleteObject"
-						></el-input>
-						<el-date-picker
-							v-model="form.date"
-							type="date"
-							placeholder="选择日期"
-							v-if="expirationStrategy == 2"
-							:disabled="!deleteObject"
-						></el-date-picker>
+						<el-input v-model="form.days" placeholder="请输入天数" v-if="form.cleanStrategy == 'EXPIRATION_DAYS'" :disabled="!deleteObject"></el-input>
+						<el-date-picker v-model="form.date" type="date" placeholder="选择日期" v-if="form.cleanStrategy == 'EXPIRATION_DATE'" :disabled="!deleteObject"></el-date-picker>
 					</el-col>
 				</el-row>
 			</el-form-item>
@@ -95,14 +70,21 @@ export default {
 			if (this.strategy === 1 && !value) {
 				return callback(new Error('前缀不能为空'))
 			}
-            callback();
+			callback()
 		}
 
-        var checkDays = (rule, value, callback) => {
-			if (this.expirationStrategy === 1 && !value) {
+		var checkDays = (rule, value, callback) => {
+			if (this.form.cleanStrategy === 'EXPIRATION_DAYS' && !value) {
 				return callback(new Error('天数不能为空'))
 			}
-            callback();
+			callback()
+		}
+
+		var checkDate = (rule, value, callback) => {
+			if (this.form.cleanStrategy === 'EXPIRATION_DATE' && !value) {
+				return callback(new Error('日期不能为空'))
+			}
+			callback()
 		}
 
 		return {
@@ -112,19 +94,21 @@ export default {
 				status: 'Enabled',
 				prefix: '',
 				tags: {},
+				cleanStrategy: 'EXPIRATION_DAYS', // 清除策略
 				days: '',
 			},
 			strategy: 1, // 策略
-			expirationStrategy: 1, // 过期策略
 			deleteObject: false, // 删除对象
+			// 标签
 			tag: {
-				// 标签
 				key: '',
 				value: '',
 			},
+			// 表单规则
 			formRules: {
 				prefix: [{ validator: checkPrefix, trigger: 'blur' }],
 				days: [{ validator: checkDays, trigger: 'blur' }],
+				date: [{ validator: checkDate, trigger: 'blur' }],
 			},
 		}
 	},
@@ -132,6 +116,12 @@ export default {
 		show(args) {
 			if (args.id) {
 				this.form = args
+				if (this.form.days != null) {
+					this.form.cleanStrategy = 'EXPIRATION_DAYS'
+				} else {
+					this.form.cleanStrategy = 'EXPIRATION_DATE'
+				}
+				this.deleteObject = true
 			} else {
 				this.form.bucketName = args.bucketName
 			}
