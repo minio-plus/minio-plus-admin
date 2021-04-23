@@ -8,9 +8,11 @@ import '@/colorfulIcon'
 import '@/config/permission'
 import '@/utils/errorLog'
 import './vabIcon'
+import uploader from 'vue-simple-uploader'
 
 import Vab from '@/utils/vab'
 import VabPermissions from 'zx-layouts/Permissions'
 
 Vue.use(Vab)
 Vue.use(VabPermissions)
+Vue.use(uploader)

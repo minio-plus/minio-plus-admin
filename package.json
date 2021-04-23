@@ -53,6 +53,7 @@
     "vab-icon": "^0.0.1",
     "vue": "^2.6.12",
     "vue-router": "^3.4.9",
+    "vue-simple-uploader": "^0.7.6",
     "vuex": "^3.6.0",
     "zx-layouts": "^0.6.24",
     "zx-templates": "^0.0.26"

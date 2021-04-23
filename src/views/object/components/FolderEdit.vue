@@ -30,6 +30,7 @@ export default {
 		return {
 			dialogVisible: false,
 			form: {
+				prefixs: [],
 				bucketName: '',
 				objectName: ''
 			}
@@ -40,13 +41,13 @@ export default {
 		show(args) {
 			this.dialogVisible = true;
 			this.form.bucketName = args.bucketName;
+			this.form.prefixs = args.prefixs;
 		},
 		handleClose(done) {
 			done()
 		},
 		save(){
 			createFolder(this.form).then(res => {
-				console.log(res)
 				this.dialogVisible = false;
 				this.$emit('success')
 			})

@@ -10,6 +10,10 @@
 					新建目录
 					<i class="el-icon-folder-add el-icon--right"></i>
 				</el-button>
+				<el-button type="primary" @click="openFolderEdit">
+					碎片管理
+					<i class="el-icon-files el-icon--right"></i>
+				</el-button>
 			</vab-query-form-left-panel>
 			<vab-query-form-right-panel>
 				<el-form ref="form" :model="queryForm" :inline="true" @submit.native.prevent>
@@ -36,7 +40,18 @@
 			<el-table-column type="index" width="50"></el-table-column>
 			<el-table-column label="名称">
 				<template slot-scope="scope">
-					<el-button type="text" icon="el-icon-folder" v-if="scope.row.dir === true" @click="nameClick(scope.row)">
+					<div v-if="scope.row.dir === true && scope.row.etag === 'A'">
+						<el-button type="text" icon="el-icon-back" @click="nameClick(scope.row)"></el-button>
+
+						<span>
+							&nbsp;
+							&nbsp;
+							&nbsp;
+							/{{ scope.row.objectName }}
+						</span>
+					</div>
+
+					<el-button type="text" icon="el-icon-folder" v-if="scope.row.dir === true && scope.row.etag !== 'A'" @click="nameClick(scope.row)">
 						{{ scope.row.objectName }}
 					</el-button>
 					<el-button type="text" icon="el-icon-picture" v-if="scope.row.dir === false" @click="nameClick(scope.row)">
@@ -53,18 +68,18 @@
 			<el-table-column prop="lastModified" label="更新时间"></el-table-column>
 
 			<el-table-column label="操作">
-				<template slot-scope="scope">
+				<template slot-scope="scope" v-if="scope.row.etag !== 'A'">
 					<el-button @click="openDetailsDialog(scope.row)" type="text" size="small">
 						详情
 					</el-button>
-					<el-dropdown class="el-button el-button--text el-button--small">
+					<el-dropdown class="el-button el-button--text el-button--small" @command="handleCommand">
 						<span class="el-dropdown-link">
 							更多
 							<i class="el-icon-arrow-down"></i>
 						</span>
 						<el-dropdown-menu slot="dropdown">
 							<el-dropdown-item>标签</el-dropdown-item>
-							<el-dropdown-item>删除</el-dropdown-item>
+							<el-dropdown-item :command="{ type: 'DELETE', data: scope.row }">删除</el-dropdown-item>
 						</el-dropdown-menu>
 					</el-dropdown>
 				</template>
@@ -80,7 +95,7 @@
 <script>
 import { DetailsDrawer, UploadDialog, FolderEdit } from './components'
 import { getBucketList } from '@/api/bucket'
-import { getObjectList } from '@/api/object'
+import { getObjectList, removeObject } from '@/api/object'
 
 export default {
 	name: 'Object',
@@ -93,7 +108,7 @@ export default {
 		return {
 			queryForm: {
 				bucketName: '',
-				prefix: '',
+				prefixs: [],
 			},
 			tableLoading: false,
 			tableData: [],
@@ -121,8 +136,17 @@ export default {
 			this.tableLoading = true
 			getObjectList(this.queryForm).then((res) => {
 				this.tableData = res.data
-				if (this.queryForm.prefix) {
-					this.tableData.splice(0, 0, { name: this.queryForm.prefix })
+				if (this.queryForm.prefixs.length > 0) {
+					this.tableData.splice(0, 0, {
+						etag: 'A',
+						objectName: this.queryForm.prefixs[
+							this.queryForm.prefixs.length - 1
+						],
+						lastModified: '',
+						storageClass: '',
+						size: 0,
+						dir: true,
+					})
 				}
 				this.tableLoading = false
 			})
@@ -132,18 +156,56 @@ export default {
 			this.$refs.detailsDrawer.show(row)
 		},
 		nameClick(data) {
-			if (data.dir) {
-				this.queryForm.prefix = data.objectName
+			if (data.dir && data.etag !== 'A') {
+				this.queryForm.prefixs.push(data.objectName)
+				this.loadTable()
+			} else if (data.dir && data.etag == 'A') {
+				this.queryForm.prefixs.splice(this.queryForm.prefixs.length - 1, 1)
 				this.loadTable()
 			} else {
 				this.openDetailsDialog(data)
 			}
 		},
+		handleCommand(command) {
+			switch(command.type){
+				case 'DELETE':
+					this.removeRow(command.data);
+					break;
+			}
+		},
+		removeRow(row) {
+			this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
+				confirmButtonText: '确定',
+				cancelButtonText: '取消',
+				type: 'warning',
+			})
+				.then(() => {
+					removeObject({
+						bucketName: this.queryForm.bucketName,
+						objectName: row.objectName
+					}).then((res) => {
+						this.$message({
+							type: 'success',
+							message: '操作成功!',
+						});
+						this.loadTable();
+					})
+				})
+				.catch(() => {
+					this.$message({
+						type: 'info',
+						message: '已取消删除',
+					})
+				})
+		},
 		openUploadDialog() {
 			this.$refs.uploadDialog.show({ bucketName: this.queryForm.bucketName })
 		},
 		openFolderEdit() {
-			this.$refs.folderEdit.show({ bucketName: this.queryForm.bucketName })
+			this.$refs.folderEdit.show({
+				prefixs: this.queryForm.prefixs,
+				bucketName: this.queryForm.bucketName,
+			})
 		},
 	},
 }

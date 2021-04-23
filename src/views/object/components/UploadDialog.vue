@@ -12,16 +12,16 @@
 				</el-input>
 			</el-form-item>
 			<el-form-item label="待上传文件">
-				<el-upload class="upload-demo" drag action="https://jsonplaceholder.typicode.com/posts/" multiple>
-					<i class="el-icon-upload"></i>
-					<div class="el-upload__text">
-						将文件拖到此处，或
-						<em>点击上传</em>
-					</div>
-					<div class="el-upload__tip" slot="tip">
-						只能上传jpg/png文件，且不超过500kb
-					</div>
-				</el-upload>
+				<uploader :options="options" class="uploader-example">
+					<uploader-unsupport></uploader-unsupport>
+					<uploader-drop>
+						<p><i class="el-icon-upload"></i>将目录或多个文件拖拽到此进行扫描</p>
+						<p>文件命名规范：1.使用 UTF-8 编码 2.区分大小写 3.长度必须在 1~1023 字节之间 4. 不能以 / 或者 \ 字符开头</p>
+						<uploader-btn class="el-button el-button--primary">选取文件</uploader-btn>
+						<uploader-btn class="el-button el-button--primary" :directory="true">选取文件夹</uploader-btn>
+					</uploader-drop>
+					<uploader-list></uploader-list>
+				</uploader>
 			</el-form-item>
 
 			<el-form-item label="存储类型">
@@ -74,6 +74,10 @@ export default {
 			},
 			uploadIn: 0,
 			bucketURL: '',
+			uploader: {
+				options: {},
+				btn: {},
+			},
 		}
 	},
 	created() {},
@@ -86,8 +90,13 @@ export default {
 			done()
 		},
 		addUserMetadata() {
-			if (this.userMetaDataMap.key !== '' && this.userMetaDataMap.value !== '') {
-				this.form.userMetaData[this.userMetaDataMap.key] = this.userMetaDataMap.value
+			if (
+				this.userMetaDataMap.key !== '' &&
+				this.userMetaDataMap.value !== ''
+			) {
+				this.form.userMetaData[
+					this.userMetaDataMap.key
+				] = this.userMetaDataMap.value
 				this.userMetaDataMap = {
 					key: '',
 					value: '',
@@ -111,5 +120,19 @@ export default {
 <style scoped>
 .upload-demo {
 	width: 100%;
+}
+
+.uploader-example {
+	font-size: 12px;
+	/* box-shadow: 0 0 10px rgba(0, 0, 0, 0.4); */
+}
+.uploader-example .uploader-btn {
+	margin-right: 4px;
+}
+.uploader-example .uploader-list {
+	max-height: 440px;
+	overflow: auto;
+	overflow-x: hidden;
+	overflow-y: auto;
 }
 </style>

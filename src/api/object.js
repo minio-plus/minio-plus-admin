@@ -2,11 +2,11 @@ import request from '@/utils/request'
 
 const BASE_PATH = '/object';
 
-export function getObjectList(params) {
+export function getObjectList(data) {
     return request({
         url: BASE_PATH + '/list',
-        method: 'get',
-        params
+        method: 'post',
+        data
     })
 }
 
@@ -22,6 +22,14 @@ export function uploadObject(params){
     return request({
         url: BASE_PATH + '/upload',
         method: 'post',
+        params
+    })
+}
+
+export function removeObject(params){
+    return request({
+        url: BASE_PATH,
+        method: 'delete',
         params
     })
 }
