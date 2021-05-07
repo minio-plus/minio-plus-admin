@@ -87,7 +87,7 @@
 		</el-table>
 
 		<details-drawer ref="detailsDrawer"></details-drawer>
-		<upload-dialog ref="uploadDialog"></upload-dialog>
+		<upload-dialog ref="uploadDialog" @close="loadTable"></upload-dialog>
 		<folder-edit ref="folderEdit" @success="loadTable"></folder-edit>
 	</div>
 </template>

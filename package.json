@@ -39,6 +39,7 @@
     ]
   },
   "dependencies": {
+    "@antv/g2plot": "^2.3.19",
     "@uppy/aws-s3": "^1.7.9",
     "@uppy/aws-s3-multipart": "^1.8.15",
     "@uppy/core": "^1.17.0",

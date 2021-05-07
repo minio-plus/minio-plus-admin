@@ -32,7 +32,7 @@
 </template>
 
 <script>
-import { createMultipartUpload as createPartUpload, getPresignedUrl, getUploadPart, composeUploadPart } from '@/api/object'
+import { initiateMultipartUpload, getPresignedUrl, getUploadPartList } from '@/api/object'
 
 import { Dashboard } from '@uppy/vue'
 import '@uppy/core/dist/style.css'
@@ -70,14 +70,14 @@ export default {
             }).use(Webcam).use(AwsS3Multipart, {
                 createMultipartUpload(file){
 					// 创建部分上传
-                    return createPartUpload({
+                    return initiateMultipartUpload({
 						bucketName,
 						key: file.name
 					}).then(res => res.data)
                 },
                 listParts(file, partData){
-                    // 获取上传部分
-					return getUploadPart(Object.assign({
+                    // 获取上传部分列表
+					return getUploadPartList(Object.assign({
 						bucketName
 					}, partData)).then(res => res.data);
                 },
@@ -115,6 +115,7 @@ export default {
 			this.bucketName = data.bucketName
 		},
 		handleClose(done) {
+			this.$emit('close');
 			done()
 		},
 	},

@@ -35,11 +35,11 @@ export function getPresignedUrl(params) {
     })
 }
 
-export function createMultipartUpload(params) {
+export function initiateMultipartUpload(data) {
     return request({
-        url: BASE_PATH + '/uploadmultipart',
+        url: BASE_PATH + '/upload/multipart/initiate',
         method: 'post',
-        params
+        data
     })
 }
 
@@ -51,9 +51,9 @@ export function composeUploadPart(data) {
     })
 }
 
-export function getUploadPart(params) {
+export function getUploadPartList(params) {
     return request({
-        url: BASE_PATH + '/upload/part',
+        url: BASE_PATH + '/upload/part/list',
         method: 'get',
         params
     })

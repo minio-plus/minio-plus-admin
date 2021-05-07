@@ -17,7 +17,7 @@ const setting = {
         'http://localhost:8080' : 'vab-mock-server',
     fileServerURL: 'http://192.168.233.129:9100',
     //标题 （包括初次加载雪花屏的标题 页面的标题 浏览器的标题）
-    title: 'MinIO Browser',
+    title: process.env.VUE_APP_TITLE,
     //简写
     abbreviation: 'vab',
     //开发环境端口号
