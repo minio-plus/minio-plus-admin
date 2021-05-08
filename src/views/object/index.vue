@@ -2,15 +2,11 @@
 	<div class="table-container">
 		<vab-query-form>
 			<vab-query-form-left-panel>
-				<el-button type="primary" @click="openUploadDialog">
-					上传
-					<i class="el-icon-upload el-icon--right"></i>
-				</el-button>
 				<el-button type="primary" @click="openFolderEdit">
 					新建目录
 					<i class="el-icon-folder-add el-icon--right"></i>
 				</el-button>
-				<el-button type="primary" @click="openFolderEdit">
+				<el-button type="primary" @click="openMultipartUploadList">
 					碎片管理
 					<i class="el-icon-files el-icon--right"></i>
 				</el-button>
@@ -87,13 +83,13 @@
 		</el-table>
 
 		<details-drawer ref="detailsDrawer"></details-drawer>
-		<upload-dialog ref="uploadDialog" @close="loadTable"></upload-dialog>
 		<folder-edit ref="folderEdit" @success="loadTable"></folder-edit>
+		<multipart-upload-list ref="multipart-upload-list"></multipart-upload-list>
 	</div>
 </template>
 
 <script>
-import { DetailsDrawer, UploadDialog, FolderEdit } from './components'
+import { DetailsDrawer, FolderEdit, MultipartUploadList } from './components'
 import { getBucketList } from '@/api/bucket'
 import { getObjectList, removeObject } from '@/api/object'
 
@@ -101,8 +97,8 @@ export default {
 	name: 'Object',
 	components: {
 		DetailsDrawer,
-		UploadDialog,
 		FolderEdit,
+		MultipartUploadList
 	},
 	data() {
 		return {
@@ -148,6 +144,13 @@ export default {
 						dir: true,
 					})
 				}
+				
+				this.$store.dispatch(
+					'upload/load',
+					this.queryForm.bucketName,
+					this.queryForm.prefixs.join()
+				)
+				
 				this.tableLoading = false
 			})
 		},
@@ -167,10 +170,10 @@ export default {
 			}
 		},
 		handleCommand(command) {
-			switch(command.type){
+			switch (command.type) {
 				case 'DELETE':
-					this.removeRow(command.data);
-					break;
+					this.removeRow(command.data)
+					break
 			}
 		},
 		removeRow(row) {
@@ -182,13 +185,13 @@ export default {
 				.then(() => {
 					removeObject({
 						bucketName: this.queryForm.bucketName,
-						objectName: row.objectName
+						objectName: row.objectName,
 					}).then((res) => {
 						this.$message({
 							type: 'success',
 							message: '操作成功!',
-						});
-						this.loadTable();
+						})
+						this.loadTable()
 					})
 				})
 				.catch(() => {
@@ -198,15 +201,15 @@ export default {
 					})
 				})
 		},
-		openUploadDialog() {
-			this.$refs.uploadDialog.show({ bucketName: this.queryForm.bucketName })
-		},
 		openFolderEdit() {
 			this.$refs.folderEdit.show({
 				prefixs: this.queryForm.prefixs,
 				bucketName: this.queryForm.bucketName,
 			})
 		},
+		openMultipartUploadList(){
+			this.$refs['multipart-upload-list'].show({bucketName: this.queryForm.bucketName});
+		}
 	},
 }
 </script>

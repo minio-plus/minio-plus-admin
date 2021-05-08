@@ -66,54 +66,48 @@ export const asyncRoutes = [{
             title: '桶管理',
             icon: 'coins'
         },
-        children: [
-            {
-                path: 'index',
-                name: 'Bucket',
-                component: () =>
-                    import ('@/views/bucket/index'),
-                meta: {
-                    title: '桶管理',
-                    icon: 'coins',
-                },
-            }
-        ]
+        children: [{
+            path: 'index',
+            name: 'Bucket',
+            component: () =>
+                import ('@/views/bucket/index'),
+            meta: {
+                title: '桶管理',
+                icon: 'coins',
+            },
+        }]
     },
 
     {
         path: '/bucket/lifecycle',
         component: Layout,
         redirect: '/index',
-        children: [
-            {
-                path: 'rule',
-                name: 'BucketLifecycleRule',
-                component: () =>
-                    import ('@/views/lifecycle/index'),
-                meta: {
-                    title: '生命周期管理',
-                    icon: 'object-group'
-                },
-            }
-        ]
+        children: [{
+            path: 'rule',
+            name: 'BucketLifecycleRule',
+            component: () =>
+                import ('@/views/lifecycle/index'),
+            meta: {
+                title: '生命周期管理',
+                icon: 'object-group'
+            },
+        }]
     },
 
     {
         path: '/object',
         component: Layout,
         redirect: '/index',
-        children: [
-            {
-                path: 'index',
-                name: 'Object',
-                component: () =>
-                    import ('@/views/object/index'),
-                meta: {
-                    title: '对象管理',
-                    icon: 'object-group'
-                },
-            }
-        ]
+        children: [{
+            path: 'index',
+            name: 'Object',
+            component: () =>
+                import ('@/views/object/index'),
+            meta: {
+                title: '对象管理',
+                icon: 'object-group'
+            },
+        }]
     },
 
     {
