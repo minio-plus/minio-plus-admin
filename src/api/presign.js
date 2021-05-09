@@ -7,7 +7,7 @@ const BASE_PATH = '/presign';
  * @param {*} params 
  * @returns 
  */
-export function getPresign(params) {
+export function getPresignObject(params) {
     return request({
         url: BASE_PATH,
         method: 'get',

@@ -1,18 +1,12 @@
 <template>
-	<el-drawer
-		title="详情"
-		:visible.sync="drawer"
-		:direction="direction"
-		:before-close="handleClose"
-		:modal="false"
-	>
+	<el-drawer title="详情" :visible.sync="drawer" :direction="direction" :before-close="handleClose" :modal="false">
 		<div class="info">
 			<el-row :gutter="20">
 				<el-col :span="24">
-					<el-image
-						:src="bucketURL + '/' + data.objectName"
-						:preview-src-list="srcList"
-					></el-image>
+					<el-image :src="fileUrl" :preview-src-list="srcList" v-if="fileType === 'image'"></el-image>
+					<video class="el-image__inner el-image__preview" :src="fileUrl" controls="controls" v-if="fileType === 'video'">
+						您的浏览器不支持 video 标签。
+					</video>
 				</el-col>
 			</el-row>
 
@@ -36,7 +30,7 @@
 				<el-col :span="4" class="text-align-right">URL</el-col>
 
 				<el-col :span="20">
-					<el-link :href="bucketURL + '/' + data.objectName" type="primary">{{ bucketURL + '/' + data.objectName }}</el-link>
+					<el-link :href="fileUrl" type="primary">{{ fileUrl }}</el-link>
 				</el-col>
 			</el-row>
 
@@ -51,7 +45,7 @@
 	</el-drawer>
 </template>
 <script>
-import { fileServerURL } from '@/config'
+import { getPresignObject } from '@/api/presign'
 
 export default {
 	data() {
@@ -60,27 +54,51 @@ export default {
 			direction: 'rtl',
 			data: {},
 			srcList: [],
-			bucketURL: ''
+			fileUrl: '',
+			fileType: '',
 		}
 	},
 	methods: {
 		show(row) {
+			getPresignObject({
+				bucketName: row.bucketName,
+				key: row.objectName,
+			}).then((res) => {
+				this.fileUrl = res.data
+				this.srcList.push(res.data)
+			})
 			this.drawer = true
 			this.data = row
-			this.bucketURL = fileServerURL + '/' + row.bucketName
-			this.srcList.push(this.bucketURL + '/' + this.data.objectName)
+			this.handlerFileType(row.objectName);
+		},
+		handlerFileType(name) {
+			switch (name.substring(name.lastIndexOf('.') + 1, name.length)) {
+				case 'jpg':
+					this.fileType = 'image';
+					break
+				case 'png':
+					this.fileType = 'image';
+					break
+				case 'mp4':
+					this.fileType = 'video';
+					break
+				default:
+					this.fileType = 'file'
+					break
+			}
 		},
 		handleClose(done) {
+			this.fileType = 'file'
 			done()
 		},
 	},
 }
 </script>
 <style scoped>
-.info{
+.info {
 	padding: 20px;
 }
-.info > .el-row{
+.info > .el-row {
 	padding: 10px 0;
 }
 .text-align-right {
