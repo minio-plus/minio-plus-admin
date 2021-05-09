@@ -3,7 +3,11 @@
 		<div class="info">
 			<el-row :gutter="20">
 				<el-col :span="24">
-					<el-image :src="fileUrl" :preview-src-list="srcList" v-if="fileType === 'image'"></el-image>
+					<el-image :src="fileUrl" :preview-src-list="srcList" v-if="fileType === 'image' || fileType === 'file'">
+						<div slot="error" class="image-slot">
+							此文件不支持预览
+						</div>
+					</el-image>
 					<video class="el-image__inner el-image__preview" :src="fileUrl" controls="controls" v-if="fileType === 'video'">
 						您的浏览器不支持 video 标签。
 					</video>
@@ -69,18 +73,18 @@ export default {
 			})
 			this.drawer = true
 			this.data = row
-			this.handlerFileType(row.objectName);
+			this.handlerFileType(row.objectName)
 		},
 		handlerFileType(name) {
 			switch (name.substring(name.lastIndexOf('.') + 1, name.length)) {
 				case 'jpg':
-					this.fileType = 'image';
+					this.fileType = 'image'
 					break
 				case 'png':
-					this.fileType = 'image';
+					this.fileType = 'image'
 					break
 				case 'mp4':
-					this.fileType = 'video';
+					this.fileType = 'video'
 					break
 				default:
 					this.fileType = 'file'

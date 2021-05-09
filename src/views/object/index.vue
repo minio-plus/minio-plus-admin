@@ -55,7 +55,11 @@
 					</el-button>
 				</template>
 			</el-table-column>
-			<el-table-column prop="size" label="大小"></el-table-column>
+			<el-table-column label="大小">
+				<template slot-scope="scope">
+					{{ convertSizeText(scope.row.size) }}
+				</template>
+			</el-table-column>
 			<el-table-column label="存储类">
 				<template slot-scope="scope">
 					{{ scope.row.storageClass == 'STANDARD' ? '标准' : '' }}
@@ -167,6 +171,18 @@ export default {
 				this.loadTable()
 			} else {
 				this.openDetailsDialog(data)
+			}
+		},
+		convertSizeText(size){
+			let newSize;
+			if(size >= 1073741824) {
+				newSize = size / 1073741824
+				return newSize.toFixed(2) + ' GB'
+			} else if(size >= 1048576) {
+				newSize = size / 1048576
+				return newSize.toFixed(2) + ' MB'
+			} else {
+				return size;
 			}
 		},
 		getIconByName(name) {
