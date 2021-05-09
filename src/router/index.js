@@ -89,7 +89,7 @@ export const asyncRoutes = [{
                 import ('@/views/lifecycle/index'),
             meta: {
                 title: '生命周期管理',
-                icon: 'object-group'
+                icon: 'star-of-life'
             },
         }]
     },

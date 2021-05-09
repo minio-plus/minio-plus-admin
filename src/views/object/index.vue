@@ -181,6 +181,9 @@ export default {
 			} else if(size >= 1048576) {
 				newSize = size / 1048576
 				return newSize.toFixed(2) + ' MB'
+			}else if(size >= 1024){
+				newSize = size / 1024
+				return newSize.toFixed(2) + ' kb'
 			} else {
 				return size;
 			}
