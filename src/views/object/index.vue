@@ -50,7 +50,7 @@
 					<el-button type="text" icon="el-icon-folder" v-if="scope.row.dir === true && scope.row.etag !== 'A'" @click="nameClick(scope.row)">
 						{{ scope.row.objectName }}
 					</el-button>
-					<el-button type="text" icon="el-icon-picture" v-if="scope.row.dir === false" @click="nameClick(scope.row)">
+					<el-button type="text" :icon="getIconByName(scope.row.objectName)" v-if="scope.row.dir === false" @click="nameClick(scope.row)">
 						{{ scope.row.objectName }}
 					</el-button>
 				</template>
@@ -168,6 +168,24 @@ export default {
 			} else {
 				this.openDetailsDialog(data)
 			}
+		},
+		getIconByName(name) {
+			let icon = '';
+			switch(name.substring(name.lastIndexOf('.') + 1, name.length)){
+				case 'jpg':
+					icon = 'el-icon-picture'
+					break;
+				case 'png':
+					icon = 'el-icon-picture'
+					break;
+				case 'mp4':
+					icon = 'el-icon-s-platform'
+					break;
+				default:
+					icon = 'el-icon-document'
+					break;
+			}
+			return icon;
 		},
 		handleCommand(command) {
 			switch (command.type) {

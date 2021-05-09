@@ -30,7 +30,7 @@
 </template>
 
 <script>
-import { getMultipartUploadList } from '@/api/object'
+import { getMultipartUploadList } from '@/api/multipart.upload'
 
 export default {
 	data() {
@@ -51,6 +51,9 @@ export default {
 			getMultipartUploadList({ bucketName: this.bucketName }).then((res) => {
 				this.tableData = res.data
 			})
+		},
+		handleClose(done) {
+			done()
 		},
 	},
 }
