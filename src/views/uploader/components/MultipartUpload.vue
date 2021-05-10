@@ -18,7 +18,7 @@ import {
 } from '@/api/presign'
 import { getUploadPartList } from '@/api/upload'
 
-import { Dashboard } from '@uppy/vue'
+import { Dashboard } from '@/plugins/uppy'
 import '@uppy/core/dist/style.css'
 import '@uppy/dashboard/dist/style.css'
 import Uppy from '@uppy/core'

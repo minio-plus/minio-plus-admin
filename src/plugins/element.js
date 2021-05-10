@@ -5,5 +5,5 @@ import 'element-ui/lib/theme-chalk/display.css'
 import '@/styles/element-variables.scss'
 
 Vue.use(ElementUI, {
-  size: 'small',
+    size: 'small',
 })
