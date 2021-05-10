@@ -78,7 +78,13 @@ export default {
 						bucketName: file.meta.bucketName,
 						uploadId,
 						key,
-					}).then((res) => res.data)
+					}).then((res) => {
+						var dataJsonString = JSON.stringify(res.data)
+							.replace(/partNumber/g, 'PartNumber')
+							.replace(/size/g, 'Size')
+							.replace(/eTag/g, 'ETag')
+						return JSON.parse(dataJsonString)
+					})
 				},
 				// 完成多部分上传
 				completeMultipartUpload(file, { uploadId, key, parts, PartNumber }) {
